@@ -1,0 +1,77 @@
+# Smart Parking App
+
+A mobile application for managing and finding parking spaces efficiently.
+
+## Features
+
+- Real-time parking space availability
+- User authentication and management
+- Parking space reservation system
+- Interactive map interface
+- Payment integration
+
+## Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+- Expo CLI
+- iOS Simulator (for iOS development)
+- Android Studio and Android SDK (for Android development)
+
+## Setup Instructions
+
+1. Clone the repository:
+```bash
+git clone [repository-url]
+cd smart-parking
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
+npm start
+```
+
+4. Run on your desired platform:
+- Press `i` to run on iOS simulator
+- Press `a` to run on Android emulator
+- Scan QR code with Expo Go app on your physical device
+
+## Development
+
+The project uses the following tech stack:
+- React Native with Expo
+- TypeScript
+- React Navigation for routing
+- Redux for state management
+- React Native Maps for map integration
+
+## Project Structure
+
+```
+smart-parking/
+├── assets/         # Images, fonts, and other static assets
+├── src/
+│   ├── components/ # Reusable UI components
+│   ├── screens/    # Screen components
+│   ├── navigation/ # Navigation configuration
+│   ├── services/   # API and other services
+│   ├── store/      # Redux store configuration
+│   └── utils/      # Utility functions
+├── App.tsx         # Root component
+└── package.json    # Project dependencies
+```
+
+## Contributing
+
+1. Create a new branch for your feature
+2. Make your changes
+3. Submit a pull request
+
+## License
+
+MIT License 
