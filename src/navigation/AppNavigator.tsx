@@ -3,10 +3,10 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 // Screens
-import HomeScreen from "../screens/HomeScreen";
-import ParkingDetailsScreen from "../screens/ParkingDetailsScreen";
-import BookingScreen from "../screens/BookingScreen";
-import ProfileScreen from "../screens/ProfileScreen";
+import { HomeScreen } from "../screens/HomeScreen";
+import { ParkingDetailsScreen } from "../screens/ParkingDetailsScreen";
+import { BookingScreen } from "../screens/BookingScreen";
+import { ProfileScreen } from "../screens/ProfileScreen";
 
 export type RootStackParamList = {
   Home: undefined;

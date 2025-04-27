@@ -3,10 +3,14 @@ import { View, StyleSheet, ScrollView } from "react-native";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { Button, Card, Title, TextInput, Text } from "react-native-paper";
 import { RootStackParamList } from "../navigation/AppNavigator";
+import { styled } from "nativewind/dist/styled";
 
 type BookingRouteProp = RouteProp<RootStackParamList, "Booking">;
 
-export default function BookingScreen() {
+const StyledView = styled(View, "flex-1 p-4 bg-white");
+const StyledText = styled(Text, "text-xl font-bold");
+
+export const BookingScreen = () => {
   const route = useRoute<BookingRouteProp>();
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -25,66 +29,69 @@ export default function BookingScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Card style={styles.card}>
-        <Card.Content>
-          <Title>Book a Parking Spot</Title>
+    <StyledView>
+      <StyledText>Book a Spot</StyledText>
+      <ScrollView style={styles.container}>
+        <Card style={styles.card}>
+          <Card.Content>
+            <Title>Book a Parking Spot</Title>
 
-          <TextInput
-            label="Date"
-            value={date}
-            onChangeText={setDate}
-            style={styles.input}
-            placeholder="MM/DD/YYYY"
-          />
+            <TextInput
+              label="Date"
+              value={date}
+              onChangeText={setDate}
+              style={styles.input}
+              placeholder="MM/DD/YYYY"
+            />
 
-          <TextInput
-            label="Start Time"
-            value={startTime}
-            onChangeText={setStartTime}
-            style={styles.input}
-            placeholder="HH:MM"
-          />
+            <TextInput
+              label="Start Time"
+              value={startTime}
+              onChangeText={setStartTime}
+              style={styles.input}
+              placeholder="HH:MM"
+            />
 
-          <TextInput
-            label="Duration (hours)"
-            value={duration}
-            onChangeText={setDuration}
-            style={styles.input}
-            keyboardType="numeric"
-          />
+            <TextInput
+              label="Duration (hours)"
+              value={duration}
+              onChangeText={setDuration}
+              style={styles.input}
+              keyboardType="numeric"
+            />
 
-          <TextInput
-            label="Vehicle Number"
-            value={vehicleNumber}
-            onChangeText={setVehicleNumber}
-            style={styles.input}
-            placeholder="Enter vehicle number"
-          />
+            <TextInput
+              label="Vehicle Number"
+              value={vehicleNumber}
+              onChangeText={setVehicleNumber}
+              style={styles.input}
+              placeholder="Enter vehicle number"
+            />
 
-          <View style={styles.summary}>
-            <Text style={styles.summaryText}>Booking Summary</Text>
-            <Text>Parking ID: {route.params.parkingId}</Text>
-            <Text>Date: {date}</Text>
-            <Text>Time: {startTime}</Text>
-            <Text>Duration: {duration} hours</Text>
-            <Text>Vehicle: {vehicleNumber}</Text>
-            {/* In a real app, we would calculate and display the total cost */}
-          </View>
+            <View style={styles.summary}>
+              <Text style={styles.summaryText}>Booking Summary</Text>
+              <Text>Parking ID: {route.params.parkingId}</Text>
+              <Text>Date: {date}</Text>
+              <Text>Time: {startTime}</Text>
+              <Text>Duration: {duration} hours</Text>
+              <Text>Vehicle: {vehicleNumber}</Text>
+              {/* In a real app, we would calculate and display the total cost */}
+            </View>
 
-          <Button
-            mode="contained"
-            onPress={handleBooking}
-            style={styles.button}
-            disabled={!date || !startTime || !duration || !vehicleNumber}
-          >
-            Confirm Booking
-          </Button>
-        </Card.Content>
-      </Card>
-    </ScrollView>
+            <Button
+              mode="contained"
+              onPress={handleBooking}
+              style={styles.button}
+              disabled={!date || !startTime || !duration || !vehicleNumber}
+            >
+              Confirm Booking
+            </Button>
+          </Card.Content>
+        </Card>
+      </ScrollView>
+    </StyledView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

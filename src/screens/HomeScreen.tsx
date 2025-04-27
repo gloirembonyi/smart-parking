@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList } from "react-native";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  RefreshControl,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
@@ -14,20 +23,23 @@ import {
   Modal,
   Text,
 } from "react-native-paper";
-import { RootStackParamList } from "../navigation/AppNavigator";
+import { RootStackParamList } from "../navigation/types";
 import ParkingService, {
   ParkingSpot,
   ParkingFilter,
 } from "../services/ParkingService";
 import NotificationService from "../services/NotificationService";
+import { Ionicons } from "@expo/vector-icons";
+import { colors } from "../theme/colors";
+import { ParkingSpotCard } from "../components/ParkingSpotCard";
 
-type HomeScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "Home"
->;
+type HomeScreenProps = {
+  navigation: NativeStackNavigationProp<RootStackParamList, "Home">;
+};
 
-export default function HomeScreen() {
-  const navigation = useNavigation<HomeScreenNavigationProp>();
+const CATEGORIES = ["All", "Nearby", "Popular", "Available", "Covered"];
+
+export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [parkingSpots, setParkingSpots] = useState<ParkingSpot[]>([]);
   const [filters, setFilters] = useState<ParkingFilter>({
@@ -45,6 +57,8 @@ export default function HomeScreen() {
     latitude: number;
     longitude: number;
   } | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     setupLocation();
@@ -106,7 +120,9 @@ export default function HomeScreen() {
       <Card.Actions>
         <Button
           mode="contained"
-          onPress={() => navigation.navigate("ParkingDetails", { id: item.id })}
+          onPress={() =>
+            navigation.navigate("ParkingDetails", { parkingId: item.id })
+          }
         >
           View Details
         </Button>
@@ -208,83 +224,176 @@ export default function HomeScreen() {
     </Portal>
   );
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    // Simulate data fetching
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
+  const mockParkingSpots = [
+    {
+      parkingId: "1",
+      name: "Downtown Parking",
+      address: "123 Main St, City Center",
+      price: 5,
+      distance: "0.3 mi",
+      available: 12,
+      imageUrl: "https://example.com/parking1.jpg",
+    },
+    {
+      parkingId: "2",
+      name: "Central Station Garage",
+      address: "456 Station Ave",
+      price: 8,
+      distance: "0.7 mi",
+      available: 0,
+      imageUrl: "https://example.com/parking2.jpg",
+    },
+  ];
+
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <Searchbar
-          placeholder="Search for parking"
-          onChangeText={setSearchQuery}
-          value={searchQuery}
-          style={styles.searchbar}
-        />
-        <Button
-          mode="contained"
-          onPress={() => setShowFilters(true)}
-          style={styles.filterButton}
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.searchContainer}>
+          <Ionicons
+            name="search"
+            size={20}
+            color={colors.gray[400]}
+            style={styles.searchIcon}
+          />
+          <TextInput
+            placeholder="Search for parking spots..."
+            style={styles.searchInput}
+            placeholderTextColor={colors.gray[400]}
+          />
+          <TouchableOpacity onPress={() => navigation.navigate("Filter")}>
+            <Ionicons name="options" size={20} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoriesContainer}
         >
-          Filters
+          {CATEGORIES.map((category) => (
+            <TouchableOpacity
+              key={category}
+              onPress={() => setSelectedCategory(category)}
+              style={[
+                styles.categoryButton,
+                selectedCategory === category && styles.selectedCategory,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.categoryText,
+                  selectedCategory === category && styles.selectedCategoryText,
+                ]}
+              >
+                {category}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      <FlatList
+        data={mockParkingSpots}
+        renderItem={({ item }) => (
+          <ParkingSpotCard
+            name={item.name}
+            address={item.address}
+            price={item.price}
+            distance={item.distance}
+            available={item.available}
+            imageUrl={item.imageUrl}
+            onPress={() =>
+              navigation.navigate("ParkingDetails", {
+                parkingId: item.parkingId,
+              })
+            }
+          />
+        )}
+        keyExtractor={(item) => item.parkingId}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerStyle={styles.listContent}
+      />
+
+      <View style={styles.mapButtonContainer}>
+        <Button mode="contained" onPress={() => navigation.navigate("Map")}>
+          View Map
         </Button>
       </View>
 
-      <MapView
-        provider={PROVIDER_GOOGLE}
-        style={styles.map}
-        initialRegion={{
-          latitude: userLocation?.latitude ?? 37.7749,
-          longitude: userLocation?.longitude ?? -122.4194,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-        showsUserLocation
-        showsMyLocationButton
-      >
-        {parkingSpots.map((spot) => (
-          <Marker
-            key={spot.id}
-            coordinate={{
-              latitude: spot.latitude,
-              longitude: spot.longitude,
-            }}
-            title={spot.name}
-            description={`${spot.available} spots available`}
-            pinColor={getMarkerColor(spot.available, spot.total)}
-          />
-        ))}
-      </MapView>
-
-      <FlatList
-        data={parkingSpots}
-        renderItem={renderParkingSpot}
-        keyExtractor={(item) => item.id}
-        style={styles.list}
-      />
-
       {renderFiltersModal()}
-    </View>
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.background.primary,
+  },
+  header: {
+    padding: 16,
+    backgroundColor: colors.white,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.gray[200],
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 16,
+    backgroundColor: colors.gray[100],
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    marginBottom: 16,
   },
-  searchbar: {
-    flex: 1,
+  searchIcon: {
     marginRight: 8,
   },
-  filterButton: {
-    marginLeft: 8,
-  },
-  map: {
-    height: 300,
-  },
-  list: {
+  searchInput: {
     flex: 1,
+    height: 40,
+    color: colors.text.primary,
+    fontSize: 16,
+  },
+  categoriesContainer: {
+    flexDirection: "row",
+    marginTop: 8,
+  },
+  categoryButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: colors.gray[100],
+    marginRight: 8,
+  },
+  selectedCategory: {
+    backgroundColor: colors.primary,
+  },
+  categoryText: {
+    color: colors.text.secondary,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  selectedCategoryText: {
+    color: colors.white,
+  },
+  listContent: {
+    paddingVertical: 8,
+  },
+  mapButtonContainer: {
+    position: "absolute",
+    bottom: 24,
+    left: 16,
+    right: 16,
   },
   card: {
     margin: 8,
@@ -316,5 +425,8 @@ const styles = StyleSheet.create({
   },
   applyButton: {
     marginTop: 16,
+  },
+  list: {
+    flex: 1,
   },
 });

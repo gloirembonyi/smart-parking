@@ -1,12 +1,13 @@
 import React from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import {
-  Avatar,
+  Text,
   Card,
   Title,
   Paragraph,
   List,
   Button,
+  Avatar,
 } from "react-native-paper";
 
 // Mock user data - in a real app, this would come from an API or local storage
@@ -35,83 +36,90 @@ const mockUser = {
   ],
 };
 
-export default function ProfileScreen() {
+export const ProfileScreen = () => {
   return (
-    <ScrollView style={styles.container}>
-      <Card style={styles.profileCard}>
-        <View style={styles.avatarContainer}>
-          <Avatar.Text
-            size={80}
-            label={mockUser.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")}
-          />
-        </View>
-        <Card.Content>
-          <Title style={styles.name}>{mockUser.name}</Title>
-          <Paragraph style={styles.email}>{mockUser.email}</Paragraph>
-        </Card.Content>
-      </Card>
+    <View style={styles.container}>
+      <Text style={styles.headerText}>Profile</Text>
+      <ScrollView style={styles.container}>
+        <Card style={styles.profileCard}>
+          <View style={styles.avatarContainer}>
+            <Avatar.Text
+              size={80}
+              label={mockUser.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
+            />
+          </View>
+          <Card.Content>
+            <Title style={styles.name}>{mockUser.name}</Title>
+            <Paragraph style={styles.email}>{mockUser.email}</Paragraph>
+          </Card.Content>
+        </Card>
 
-      <Card style={styles.infoCard}>
-        <Card.Content>
-          <Title>Personal Information</Title>
-          <List.Item
-            title="Phone"
-            description={mockUser.phone}
-            left={(props) => <List.Icon {...props} icon="phone" />}
-          />
-          <List.Item
-            title="Vehicle Number"
-            description={mockUser.vehicle}
-            left={(props) => <List.Icon {...props} icon="car" />}
-          />
-        </Card.Content>
-      </Card>
+        <Card style={styles.infoCard}>
+          <Card.Content>
+            <Title>Personal Information</Title>
+            <List.Item
+              title="Phone"
+              description={mockUser.phone}
+              left={(props) => <List.Icon {...props} icon="phone" />}
+            />
+            <List.Item
+              title="Vehicle Number"
+              description={mockUser.vehicle}
+              left={(props) => <List.Icon {...props} icon="car" />}
+            />
+          </Card.Content>
+        </Card>
 
-      <Card style={styles.bookingsCard}>
-        <Card.Content>
-          <Title>Recent Bookings</Title>
-          {mockUser.bookings.map((booking) => (
-            <Card key={booking.id} style={styles.bookingItem}>
-              <Card.Content>
-                <Title style={styles.parkingName}>{booking.parkingName}</Title>
-                <Paragraph>Date: {booking.date}</Paragraph>
-                <Paragraph>Time: {booking.time}</Paragraph>
-                <Paragraph>Duration: {booking.duration}</Paragraph>
-                <View style={styles.statusContainer}>
-                  <Paragraph
-                    style={[
-                      styles.status,
-                      {
-                        color:
-                          booking.status === "Upcoming" ? "#2196F3" : "#4CAF50",
-                      },
-                    ]}
-                  >
-                    {booking.status}
-                  </Paragraph>
-                </View>
-              </Card.Content>
-            </Card>
-          ))}
-        </Card.Content>
-      </Card>
+        <Card style={styles.bookingsCard}>
+          <Card.Content>
+            <Title>Recent Bookings</Title>
+            {mockUser.bookings.map((booking) => (
+              <Card key={booking.id} style={styles.bookingItem}>
+                <Card.Content>
+                  <Title style={styles.parkingName}>
+                    {booking.parkingName}
+                  </Title>
+                  <Paragraph>Date: {booking.date}</Paragraph>
+                  <Paragraph>Time: {booking.time}</Paragraph>
+                  <Paragraph>Duration: {booking.duration}</Paragraph>
+                  <View style={styles.statusContainer}>
+                    <Paragraph
+                      style={[
+                        styles.status,
+                        {
+                          color:
+                            booking.status === "Upcoming"
+                              ? "#2196F3"
+                              : "#4CAF50",
+                        },
+                      ]}
+                    >
+                      {booking.status}
+                    </Paragraph>
+                  </View>
+                </Card.Content>
+              </Card>
+            ))}
+          </Card.Content>
+        </Card>
 
-      <Button
-        mode="outlined"
-        style={styles.logoutButton}
-        onPress={() => {
-          // Handle logout
-          console.log("Logout pressed");
-        }}
-      >
-        Log Out
-      </Button>
-    </ScrollView>
+        <Button
+          mode="outlined"
+          style={styles.logoutButton}
+          onPress={() => {
+            // Handle logout
+            console.log("Logout pressed");
+          }}
+        >
+          Log Out
+        </Button>
+      </ScrollView>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -156,5 +164,10 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     margin: 16,
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 16,
   },
 });
